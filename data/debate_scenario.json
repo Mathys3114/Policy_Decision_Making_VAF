@@ -1,0 +1,87 @@
+{
+  "scenario_name": "Public Transit: Tramway Line 5 Extension in Historic Center",
+  "values": [
+    "Mobility",
+    "Economy",
+    "Environment",
+    "Heritage"
+  ],
+  "arguments": [
+    {
+      "id": "Arg1",
+      "text": "The city must build Tramway Line 5 to improve accessibility and reduce commute times.",
+      "value": "Mobility"
+    },
+    {
+      "id": "Arg2",
+      "text": "The 200M€ budget is financially unviable and will massively increase local taxes.",
+      "value": "Economy"
+    },
+    {
+      "id": "Arg3",
+      "text": "The ecological emergency mandates building the tramway to reduce CO2, overriding cost concerns.",
+      "value": "Environment"
+    },
+    {
+      "id": "Arg4",
+      "text": "Surface construction will destroy the 18th-century cobblestone square and ruin the historic center.",
+      "value": "Heritage"
+    },
+    {
+      "id": "Arg5",
+      "text": "We can build an underground tunnel alternative to completely bypass the historic square.",
+      "value": "Mobility"
+    },
+    {
+      "id": "Arg6",
+      "text": "Prolonged tunnel construction will bankrupt local shops around the square.",
+      "value": "Economy"
+    },
+    {
+      "id": "Arg7",
+      "text": "The city has provisioned a financial rescue package to compensate affected businesses.",
+      "value": "Economy"
+    },
+    {
+      "id": "Arg8",
+      "text": "The tunnel entrance requires cutting down the centenary trees in the City Park.",
+      "value": "Environment"
+    },
+    {
+      "id": "Arg9",
+      "text": "Those trees are diseased and are already scheduled for removal next year anyway.",
+      "value": "Environment"
+    },
+    {
+      "id": "Arg10",
+      "text": "The modern glass tram stations will clash horribly with the city's classical architecture.",
+      "value": "Heritage"
+    }
+  ],
+  "attacks": [
+    {"attacker": "Arg2", "target": "Arg1"},
+    {"attacker": "Arg3", "target": "Arg2"},
+    {"attacker": "Arg2", "target": "Arg3"},
+    {"attacker": "Arg4", "target": "Arg1"},
+    {"attacker": "Arg5", "target": "Arg4"},
+    {"attacker": "Arg6", "target": "Arg5"},
+    {"attacker": "Arg7", "target": "Arg6"},
+    {"attacker": "Arg8", "target": "Arg5"},
+    {"attacker": "Arg9", "target": "Arg8"},
+    {"attacker": "Arg10", "target": "Arg1"}
+  ],
+  "agents": [
+    {
+      "name": "The Green Mayor (Pro-Ecology & Transit)",
+      "preferences": ["Environment", "Mobility", "Economy", "Heritage"]
+    },
+    {
+      "name": "Local Merchant Association (Pro-Business)",
+      "preferences": ["Economy", "Heritage", "Mobility", "Environment"]
+    },
+    {
+      "name": "Heritage Conservator Society (Pro-History)",
+      "preferences": ["Heritage", "Environment", "Economy", "Mobility"]
+    }
+  ]
+}
