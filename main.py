@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from src.parser import load_vaf_data
 from src.vaf_system import VAFSystem
 from src.solver import compute_preferred_extensions
-from src.visualizer import draw_subjective_graph
+from src.visualizer import draw_subjective_graph, draw_analysis_graphs
 
 # Codes couleurs ANSI pour styliser la démo dans le terminal
 class Colors:
@@ -17,21 +17,58 @@ def clear_terminal():
     """Nettoie l'écran du terminal pour une interface propre."""
     os.system('cls' if os.name == 'nt' else 'clear')
 
+def analyze_debate_consensus(data, agent_results):
+    print(f"\n{Colors.BLUE}=== ANALYSE DES ACCORDS ET DÉSACCORDS ==={Colors.RESET}")
+    
+    arg_acceptance = {}
+    for agent_name, accepted_args in agent_results.items():
+        for arg in accepted_args:
+            if arg not in arg_acceptance:
+                arg_acceptance[arg] = []
+            arg_acceptance[arg].append(agent_name)
+            
+    consensus = []
+    disagreements = []
+    num_agents = len(agent_results)
+    
+    for arg, agents in arg_acceptance.items():
+        if len(agents) == num_agents:
+            consensus.append(arg)
+        else:
+            disagreements.append((arg, agents))
+            
+    # Affichage du Consensus
+    print(f"{Colors.GREEN}\n🤝 CONSENSUS TOTAL (Accepté par tous) :{Colors.RESET}")
+    if not consensus:
+        print("  Aucun argument ne fait l'unanimité.")
+    else:
+        for arg in consensus:
+            print(f"  ✅ [{arg}] : {data['arguments'][arg].text}")
+            
+    # Affichage des Désaccords
+    print(f"{Colors.YELLOW}\n⚡ POINTS DE DÉSACCORD :{Colors.RESET}")
+    if not disagreements:
+        print("  Tout le monde est d'accord sur les arguments retenus.")
+    else:
+        for arg, agents in disagreements:
+            print(f"  ⚠️ [{arg}] est soutenu UNIQUEMENT par : {', '.join(agents)}")
+            print(f"     -> {data['arguments'][arg].text}")
+    print("\n" + "="*50)
+    
+    draw_analysis_graphs(data, consensus, disagreements)
+
 def display_debate_results(data, vaf):
     clear_terminal()
     print(f"{Colors.BLUE}=== RÉSULTATS DU DÉBAT ==={Colors.RESET}\n")
     
     n_agents = len(data["agents"])
-    
-    # CRÉATION DE LA GRILLE MATPLOTLIB (1 ligne, X colonnes)
-    # On ajuste dynamiquement la largeur de la fenêtre (ex: 6 pouces par agent)
     fig, axes = plt.subplots(1, n_agents, figsize=(6 * n_agents, 7))
     fig.suptitle(f"Comparaison des Graphes - {data['scenario_name']}", fontsize=16, fontweight='bold')
     
-    # Si on n'a qu'un seul agent, matplotlib ne renvoie pas un tableau pour 'axes', 
-    # donc on le force dans une liste pour éviter un crash
     if n_agents == 1:
         axes = [axes]
+    
+    agent_results = {}
     
     for i, agent in enumerate(data["agents"]):
         print(f"Agent : {Colors.YELLOW}{agent.name}{Colors.RESET}")
@@ -46,6 +83,8 @@ def display_debate_results(data, vaf):
         else:
             first_ext = set()
             rejected = set(data["arguments"].keys())
+            
+        agent_results[agent.name] = first_ext
         
         print(f"  {Colors.GREEN}✅ Preferred Extension(s) : {len(extensions)}{Colors.RESET}")
         for j, ext in enumerate(extensions):
@@ -54,14 +93,12 @@ def display_debate_results(data, vaf):
                 print(f"     ✅ [{arg_id}] : {data['arguments'][arg_id].text}")
         print("-" * 50)
         
-        # ON DESSINE SUR L'AXE CORRESPONDANT À CET AGENT (axes[i])
         draw_subjective_graph(data, vaf, agent, first_ext, rejected, ax=axes[i])
     
-    print("  Affichage des graphes... (Fermez la fenêtre Matplotlib pour continuer)")
+    analyze_debate_consensus(data, agent_results)
     
-    # Ajustement automatique des marges pour éviter que les titres se chevauchent
+    print("  Affichage des graphes... (Fermez la fenêtre Matplotlib pour continuer)")
     plt.tight_layout()
-    # On affiche la fenêtre contenant TOUS les agents d'un coup
     plt.show()
 
 def modify_agent_preferences(data):
